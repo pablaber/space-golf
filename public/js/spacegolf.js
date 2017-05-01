@@ -9,7 +9,7 @@ const SHIP_MASS = 3;
 const GRAV = 40;
 const MIN_GRAV = GRAV / 10000;
 
-const GOAL_RADIUS = 10;
+const GOAL_RADIUS = 15;
 const GOAL_COLOR = "#2fdddd";
 
 var canvas = document.getElementById('space-golf');
@@ -63,6 +63,11 @@ function Planet(x, y, radius, mass, color) {
     this.mass = mass;
     this.color = color;
 
+    this.containsShip = function(ship) {
+        var d = Math.sqrt(Math.pow(this.x - ship.x, 2) + Math.pow(this.y - ship.y, 2))
+        return d <= this.radius;
+    }
+
     this.draw = function() {
         c.beginPath();
         c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
@@ -79,6 +84,11 @@ function Planet(x, y, radius, mass, color) {
 function Goal(x, y) {
     this.x = x;
     this.y = y;
+
+    this.containsShip = function(ship) {
+        var d = Math.sqrt(Math.pow(this.x - ship.x, 2) + Math.pow(this.y - ship.y, 2))
+        return d <= GOAL_RADIUS;
+    }
 
     this.draw = function() {
         c.beginPath();
@@ -187,17 +197,31 @@ var fg = function(a, b) {
 
 // MAIN METHODS
 
-var ship = new Ship(100, 300);
-var planet1 = new Planet(200, 150, 30, 3, '#ab5612');
-var goal = new Goal(500, 200);
+var ship, goal, planets;
 var velocity = new Velocity();
 
-var objects = [ship, planet1, goal];
+var level1 = {
+    ship: new Ship(100, 300),
+    planets: [
+        new Planet(300, 250, 30, 3, "#ab5612"),
+        new Planet(400, 500, 40, 4, "#75ff1f")
+    ],
+    goal: new Goal(500, 200)
+}
+
+var load = function(level) {
+    ship = level.ship;
+    planets = level.planets;
+    goal = level.goal;
+    init();
+}
 
 function init() {
-    planet1.draw();
-    ship.draw();
+    for(planet of planets) {
+        planet.draw();
+    }
     goal.draw();
+    ship.draw();
 }
 
 function animate() {
@@ -205,13 +229,31 @@ function animate() {
     c.clearRect(0, 0, innerWidth, innerHeight);
 
 	if(ship.moving) {
-  	    var v = fg(planet1, ship);
-  	     ship.addVelocity(v)
+        for(planet of planets) {
+  	        var v = fg(planet, ship);
+  	        ship.addVelocity(v);
+            if(planet.containsShip(ship)) {
+                ship.moving = false;
+                ship.dx = 0;
+                ship.dy = 0;
+                ship.x = planet.x;
+                ship.y = planet.y;
+            }
+        }
+        if(goal.containsShip(ship)) {
+            ship.moving = false;
+            ship.dx = 0;
+            ship.dy = 0;
+            ship.x = goal.x;
+            ship.y = goal.y;
+        }
     }
 
-    for (obj of objects) {
-        obj.update();
+    for (planet of planets) {
+        planet.update();
     }
+    goal.update();
+    ship.update();
 
     if (settingVelocity) {
         velocity.changeDestination(mouse.x, mouse.y);
@@ -219,5 +261,5 @@ function animate() {
     }
 }
 
-init();
+load(level1);
 animate();
