@@ -1,0 +1,22 @@
+{
+  "name": "space-golf",
+  "version": "1.0.0",
+  "description": "HTML Canvas Game",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pablaber/space-golf.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pablaber/space-golf/issues"
+  },
+  "homepage": "https://github.com/pablaber/space-golf#readme",
+  "dependencies": {
+    "express": "^4.15.2"
+  }
+}
