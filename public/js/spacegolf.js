@@ -4,6 +4,9 @@
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 500;
 
+const EXPLODE_COLOR = "red";
+const EXPLODE_MAX = 20;
+
 const SHIP_RADIUS = 5;
 const SHIP_COLOR = "#362af2";
 const SHIP_SPEED = 2;
@@ -31,6 +34,9 @@ function Ship(x, y, dx = 0, dy = 0) {
     this.dy = dy;
     this.mass = SHIP_MASS;
     this.moving = dx != 0 || dy != 0;
+    this.visible = true;
+    this.exploding = false;
+    this.explodeRadius = 0;
 
 	this.addVelocity = function(v) {
   	    this.dx += v.x;
@@ -38,19 +44,40 @@ function Ship(x, y, dx = 0, dy = 0) {
     }
 
     this.draw = function() {
-        c.beginPath();
-        c.arc(this.x, this.y, SHIP_RADIUS, 0, Math.PI * 2, false);
-        c.lineWidth = 0;
-        c.fillStyle = SHIP_COLOR;
-        c.fill();
+        if(this.visible) {
+            c.beginPath();
+            c.arc(this.x, this.y, SHIP_RADIUS, 0, Math.PI * 2, false);
+            c.lineWidth = 0;
+            c.fillStyle = SHIP_COLOR;
+            c.fill();
+        }
+        if(this.exploding) {
+            c.beginPath();
+            c.arc(this.x, this.y, this.explodeRadius, 0, Math.PI * 2, false);
+            c.lineWidth = 0;
+            c.fillStyle = EXPLODE_COLOR;
+            c.fill();
+            if(this.explodeRadius < EXPLODE_MAX) {
+                this.explodeRadius++;
+            } else {
+                this.exploding = false;
+                this.visible = false;
+            }
+        }
     }
 
     this.update = function() {
-        if (this.x + SHIP_RADIUS > CANVAS_WIDTH || this.x - SHIP_RADIUS < 0) {
-            this.dx = -this.dx;
+        if ((this.x + SHIP_RADIUS > CANVAS_WIDTH || this.x - SHIP_RADIUS < 0) && this.moving){
+            this.dx = 0;
+            this.dy = 0;
+            this.moving = false;
+            this.exploding = true;
         }
-        if (this.y + SHIP_RADIUS > CANVAS_HEIGHT || this.y - SHIP_RADIUS < 0) {
-            this.dy = -this.dy;
+        if ((this.y + SHIP_RADIUS > CANVAS_HEIGHT || this.y - SHIP_RADIUS < 0) && this.moving) {
+            this.dx = 0;
+            this.dy = 0;
+            this.moving = false;
+            this.exploding = true;
         }
         this.x += this.dx;
         this.y += this.dy;
@@ -358,8 +385,7 @@ function animate() {
                 ship.moving = false;
                 ship.dx = 0;
                 ship.dy = 0;
-                ship.x = planet.x;
-                ship.y = planet.y;
+                ship.exploding = true;
             }
         }
         if(goal.containsShip(ship)) {
