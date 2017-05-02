@@ -1,6 +1,9 @@
 // SPACE GOLF
 
 // CONSTANTS
+const CANVAS_WIDTH = 800;
+const CANVAS_HEIGHT = 500;
+
 const SHIP_RADIUS = 5;
 const SHIP_COLOR = "#362af2";
 const SHIP_SPEED = 2;
@@ -14,8 +17,8 @@ const GOAL_COLOR = "#2fdddd";
 
 var canvas = document.getElementById('space-golf');
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = CANVAS_WIDTH;
+canvas.height = CANVAS_HEIGHT;
 
 var c = canvas.getContext('2d');
 
@@ -43,10 +46,10 @@ function Ship(x, y, dx = 0, dy = 0) {
     }
 
     this.update = function() {
-        if (this.x + SHIP_RADIUS > innerWidth || this.x - SHIP_RADIUS < 0) {
+        if (this.x + SHIP_RADIUS > CANVAS_WIDTH || this.x - SHIP_RADIUS < 0) {
             this.dx = -this.dx;
         }
-        if (this.y + SHIP_RADIUS > innerHeight || this.y - SHIP_RADIUS < 0) {
+        if (this.y + SHIP_RADIUS > CANVAS_HEIGHT || this.y - SHIP_RADIUS < 0) {
             this.dy = -this.dy;
         }
         this.x += this.dx;
@@ -54,6 +57,34 @@ function Ship(x, y, dx = 0, dy = 0) {
 
         this.draw();
   }
+}
+
+function Asteroid(x, y, dx, dy, radius, mass, color) {
+    this.x = x;
+    this.y = y;
+    this.dx = dx;
+    this.dy = dy;
+    this.mass = mass;
+    this.radius = radius;
+
+    this.addVelocity = function(v) {
+  	    this.dx += v.x;
+        this.dy += v.y;
+    }
+
+    this.draw = function() {
+        c.beginPath();
+        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+        c.lineWidth = 0;
+        c.fillStyle = this.color;
+        c.fill();
+    }
+
+    this.update = function() {
+        this.x += this.dx;
+        this.y += this.dy;
+        this.draw()
+    }
 }
 
 function Planet(x, y, radius, mass, color) {
@@ -103,6 +134,53 @@ function Goal(x, y) {
     }
 }
 
+function Text(message, x, y, font, fill, align) {
+    this.message = message;
+    this.x = x;
+    this.y = y;
+    this.font = font;
+    this.fill = fill;
+    this.align = align;
+
+    this.draw = function() {
+        c.font = this.font;
+        c.fillStyle = this.fill;
+        c.textAlign = this.align;
+        c.fillText(this.message, this.x, this.y)
+    }
+
+    this.update = function() {
+        this.draw();
+    }
+}
+
+function Clickable(x, y, width, height, opacity, fill, method) {
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.opacity = opacity;
+    this.fill = fill;
+    this.method = method;
+
+    this.callIfClicked = function() {
+        if(mouse.x >= this.x && mouse.x <= this.x + this.width && mouse.y >= this.y && mouse.y <= this.y + this.height) {
+            this.method();
+        }
+    }
+
+    this.draw = function() {
+        c.globalAlpha = opacity;
+        c.fillStyle = fill;
+        c.fillRect(x, y, width, height);
+        c.globalAlpha = 1.0;
+    }
+
+    this.update = function() {
+        this.draw();
+    }
+}
+
 function Velocity() {
     this.x1 = undefined;
     this.y1 = undefined;
@@ -144,14 +222,18 @@ var mouse = {
 var settingVelocity = false;
 
 window.addEventListener('mousemove', function(event) {
-    mouse.x = event.x;
-    mouse.y = event.y;
+    if(event.offsetX) {
+        mouse.x = event.offsetX;
+        mouse.y = event.offsetY;
+    }
+    else if(event.layerX) {
+        mouse.x = event.layerX;
+        mouse.y = event.layerY;
+    }
 });
 
 window.addEventListener('mousedown', function(event) {
-    mouse.x = event.x;
-    mouse.y = event.y;
-    if (mouseDownInPlayer() && !ship.moving) {
+    if (!!ship && mouseDownInPlayer() && !ship.moving) {
         velocity.x1 = ship.x;
         velocity.y1 = ship.y;
         velocity.x2 = mouse.x;
@@ -161,8 +243,6 @@ window.addEventListener('mousedown', function(event) {
 });
 
 window.addEventListener('mouseup', function(event) {
-	mouse.x = event.x;
-    mouse.y = event.y;
     if(settingVelocity) {
   	    var dv = velocity.getVelocity();
         ship.dx = dv.x;
@@ -171,6 +251,12 @@ window.addEventListener('mouseup', function(event) {
   	    settingVelocity = false;
     }
 });
+
+window.addEventListener('click', function(event) {
+    for(clickable of clickables) {
+        clickable.callIfClicked();
+    }
+})
 
 var mouseDownInPlayer = function() {
     if (Math.abs(mouse.x - ship.x) <= SHIP_RADIUS * 2) {
@@ -197,8 +283,29 @@ var fg = function(a, b) {
 
 // MAIN METHODS
 
-var ship, goal, planets;
+var ship, goal, planets, asteroids, texts, clickables;
 var velocity = new Velocity();
+
+var homeScreen = {
+    ship: undefined,
+    planets: [
+        new Planet(CANVAS_WIDTH/2, 2*CANVAS_HEIGHT/3, 50, 10, "#ababab")
+    ],
+    asteroids: [
+        new Asteroid(CANVAS_WIDTH/2 - 200, 2*CANVAS_HEIGHT/3, 0, -2, 10, 4, "#555"),
+        new Asteroid(CANVAS_WIDTH/2 + 200, 2*CANVAS_HEIGHT/3, 0, 2, 10, 4, "#555")
+    ],
+    texts: [
+        new Text("Space Golf", CANVAS_WIDTH/2, CANVAS_HEIGHT/3  , "30px Arial Black", "green", "center"),
+        new Text("Start", CANVAS_WIDTH/2, 2*CANVAS_HEIGHT/3 + 8, "20px Arial Black", "black", "center")
+    ],
+    clickables: [
+        new Clickable(CANVAS_WIDTH/2-35, 2*CANVAS_HEIGHT/3-20, 70, 40, 0, "red", function() {
+            load(level1);
+        })
+    ],
+    goal: undefined
+}
 
 var level1 = {
     ship: new Ship(100, 300),
@@ -206,6 +313,9 @@ var level1 = {
         new Planet(300, 250, 30, 3, "#ab5612"),
         new Planet(400, 500, 40, 4, "#75ff1f")
     ],
+    asteroids: [],
+    texts: [],
+    clickables: [],
     goal: new Goal(500, 200)
 }
 
@@ -213,6 +323,9 @@ var load = function(level) {
     ship = level.ship;
     planets = level.planets;
     goal = level.goal;
+    texts = level.texts;
+    clickables = level.clickables;
+    asteroids = level.asteroids;
     init();
 }
 
@@ -220,15 +333,24 @@ function init() {
     for(planet of planets) {
         planet.draw();
     }
-    goal.draw();
-    ship.draw();
+    for(asteroid of asteroids) {
+        asteroid.draw();
+    }
+    for(text of texts) {
+        text.draw();
+    }
+    for(clickable of clickables) {
+        clickable.draw();
+    }
+    if(!!goal) goal.draw();
+    if(!!ship) ship.draw();
 }
 
 function animate() {
     requestAnimationFrame(animate);
     c.clearRect(0, 0, innerWidth, innerHeight);
 
-	if(ship.moving) {
+	if(!!ship && ship.moving) {
         for(planet of planets) {
   	        var v = fg(planet, ship);
   	        ship.addVelocity(v);
@@ -249,11 +371,29 @@ function animate() {
         }
     }
 
+    if(asteroids.length > 0) {
+        for(planet of planets) {
+            for(asteroid of asteroids) {
+                var v = fg(planet, asteroid);
+                asteroid.addVelocity(v);
+            }
+        }
+    }
+
     for (planet of planets) {
         planet.update();
     }
-    goal.update();
-    ship.update();
+    for (asteroid of asteroids) {
+        asteroid.update();
+    }
+    for (text of texts) {
+        text.update();
+    }
+    for(clickable of clickables) {
+        clickable.update();
+    }
+    if(!!goal) goal.update();
+    if(!!ship) ship.update();
 
     if (settingVelocity) {
         velocity.changeDestination(mouse.x, mouse.y);
@@ -261,5 +401,5 @@ function animate() {
     }
 }
 
-load(level1);
+load(homeScreen);
 animate();
