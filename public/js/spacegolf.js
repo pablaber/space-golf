@@ -1,5 +1,5 @@
 document.getElementById('reset-level').onclick = function() {
-    loadLevel(cloneLevel(currentLevel));
+    loadLevel(currentLevel);
 }
 
 // SPACE GOLF
@@ -333,7 +333,7 @@ var homeScreen = {
     clickables: [
         new Clickable(CANVAS_WIDTH/2-35, 2*CANVAS_HEIGHT/3-20, 70, 40, 0, "red", function() {
             currentLevel = level1;
-            loadLevel(cloneLevel(currentLevel));
+            loadLevel(currentLevel);
         })
     ],
     goal: undefined
@@ -385,13 +385,13 @@ var cloneLevel = function(level) {
 var currentLevel = homeScreen;
 
 var loadLevel = function(level) {
-    console.log(level);
-    ship = level.ship;
-    planets = level.planets;
-    goal = level.goal;
-    texts = level.texts;
-    clickables = level.clickables;
-    asteroids = level.asteroids;
+    levelClone = cloneLevel(level);
+    ship = levelClone.ship;
+    planets = levelClone.planets;
+    goal = levelClone.goal;
+    texts = levelClone.texts;
+    clickables = levelClone.clickables;
+    asteroids = levelClone.asteroids;
     init();
 }
 
@@ -466,5 +466,5 @@ function animate() {
     }
 }
 
-loadLevel(cloneLevel(currentLevel));
+loadLevel(currentLevel);
 animate();

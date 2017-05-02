@@ -13,3 +13,18 @@ canvas {
     justify-content: center;
     align-items: center;
 }
+
+.buttons {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#reset-level {
+    background-color: #082f6d;
+    border: 2px solid green;
+    font-weight: bold;
+    font-size: 16px;
+    outline: none;
+}
