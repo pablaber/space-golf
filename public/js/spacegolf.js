@@ -1,3 +1,7 @@
+document.getElementById('reset-level').onclick = function() {
+    loadLevel(cloneLevel(currentLevel));
+}
+
 // SPACE GOLF
 
 // CONSTANTS
@@ -328,7 +332,8 @@ var homeScreen = {
     ],
     clickables: [
         new Clickable(CANVAS_WIDTH/2-35, 2*CANVAS_HEIGHT/3-20, 70, 40, 0, "red", function() {
-            load(level1);
+            currentLevel = level1;
+            loadLevel(cloneLevel(currentLevel));
         })
     ],
     goal: undefined
@@ -346,7 +351,41 @@ var level1 = {
     goal: new Goal(500, 200)
 }
 
-var load = function(level) {
+var cloneLevel = function(level) {
+    var cloneShip, clonePlanets, cloneAsteroids, cloneTexts, cloneClickables, cloneGoal;
+    if(!!level.ship) cloneShip = new Ship(level.ship.x, level.ship.y);
+    var clonePlanets = [];
+    for(planet of level.planets) {
+        clonePlanets.push(new Planet(planet.x, planet.y, planet.radius, planet.mass, planet.color));
+    }
+    var cloneAsteroids = [];
+    for(asteroid of level.asteroids) {
+        cloneAsteroids.push(new Asteroid(asteroid.x, asteroid.y, asteroid.dx, asteroid.dy, asteroid.radius, asteroid.mass, asteroid.color))
+    }
+    var cloneTexts = [];
+    for(text of level.texts) {
+        cloneTexts.push(new Text(text.message, text.x, text.y, text.font, text.fill, text.align))
+    }
+
+    var cloneClickables = [];
+    for(clickable of level.clickables) {
+        cloneClickables.push(new Clickable(clickable.x, clickable.y, clickable.width, clickable.height, clickable.opacity, clickable.fill, clickable.method))
+    }
+    if(!!level.goal) cloneGoal = new Goal(level.goal.x, level.goal.y)
+    return {
+        ship: cloneShip,
+        planets: clonePlanets,
+        asteroids: cloneAsteroids,
+        texts: cloneTexts,
+        clickables: cloneClickables,
+        goal: cloneGoal
+    }
+}
+
+var currentLevel = homeScreen;
+
+var loadLevel = function(level) {
+    console.log(level);
     ship = level.ship;
     planets = level.planets;
     goal = level.goal;
@@ -427,5 +466,5 @@ function animate() {
     }
 }
 
-load(homeScreen);
+loadLevel(cloneLevel(currentLevel));
 animate();
