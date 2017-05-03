@@ -135,12 +135,14 @@ function Asteroid(x, y, dx, dy, radius, mass, color) {
 	};
 }
 
-function Planet(x, y, radius, mass, color) {
+function Planet(x, y, radius, color, mass=null) {
 	this.x = x;
 	this.y = y;
 	this.radius = radius;
-	this.mass = mass;
+    this.mass = !!mass ? mass : Math.pow((radius/10), 1.5);
 	this.color = color;
+
+    console.log(this.mass);
 
 	this.containsShip = function(ship) {
 		var d = Math.sqrt(
@@ -469,11 +471,11 @@ var levelFailed = false;
 var homeScreen = {
 	ship: undefined,
 	planets: [
-		new Planet((1/2)*CANVAS_WIDTH, (2/3)*CANVAS_HEIGHT, 50, 10, "#ababab")
+		new Planet((1/2)*CANVAS_WIDTH, (2/3)*CANVAS_HEIGHT, 50, "#ababab")
 	],
 	asteroids: [
-		new Asteroid((1/2)*CANVAS_WIDTH-200, (2/3)*CANVAS_HEIGHT, 0, -2, 10, 4, "#555"),
-		new Asteroid((1/2)*CANVAS_WIDTH+200, (2/3)*CANVAS_HEIGHT, 0, 2, 10, 4, "#555")
+		new Asteroid((1/2)*CANVAS_WIDTH-200, (2/3)*CANVAS_HEIGHT, 0, -2.1, 10, 4, "#555"),
+		new Asteroid((1/2)*CANVAS_WIDTH+200, (2/3)*CANVAS_HEIGHT, 0, 2.1, 10, 4, "#555")
 	],
 	texts: [
 		new Text("Space Golf",(1/2)*CANVAS_WIDTH, (1/3)*CANVAS_HEIGHT, "30px Arial Black", "green", "center"),
@@ -520,7 +522,7 @@ var level01 = {
 var level02 = {
   	ship: new Ship(100, (2/3)*CANVAS_HEIGHT),
   	planets: [
-	  	new Planet((1/2)*CANVAS_WIDTH, (1/4)*CANVAS_HEIGHT, 40, 8, "#ababab")
+	  	new Planet((1/2)*CANVAS_WIDTH, (1/4)*CANVAS_HEIGHT, 40, "#ababab")
   	],
   	asteroids: [],
   	texts: [
@@ -548,7 +550,7 @@ var level02 = {
 var level03 = {
   	ship: new Ship(100, (1/2)*CANVAS_HEIGHT),
   	planets: [
-    	new Planet((1/2)*CANVAS_WIDTH, 0, 40, 8, "#ab5612")
+    	new Planet((1/2)*CANVAS_WIDTH, 0, 40, "#ab5612")
   	],
   	asteroids: [
     	new Asteroid((1/2)*CANVAS_WIDTH, -75, 6.7, 0, 15, 6.7, "#aaaaaa"),
@@ -579,7 +581,7 @@ var level03 = {
 level04 = {
 	ship: new Ship(100, (1/2)*CANVAS_HEIGHT),
   	planets: [
-    	new Planet((1/2)*CANVAS_WIDTH, (1/2)*CANVAS_HEIGHT, 40, 8, "#ab5612")
+    	new Planet((1/2)*CANVAS_WIDTH, (1/2)*CANVAS_HEIGHT, 50, "#ab5612")
   	],
   	asteroids: [],
   	texts: [],
@@ -605,8 +607,8 @@ level04 = {
 var level05 = {
     ship: new Ship(100, (1/2)*CANVAS_HEIGHT),
     planets: [
-        new Planet((1/2)*CANVAS_WIDTH, (1/3)*CANVAS_HEIGHT, 60, 6, "#ab5612"),
-        new Planet((1/2)*CANVAS_WIDTH, (2/3)*CANVAS_HEIGHT, 60, 6, "#ab5612")
+        new Planet((1/2)*CANVAS_WIDTH, (1/3)*CANVAS_HEIGHT, 60, "#ab5612"),
+        new Planet((1/2)*CANVAS_WIDTH, (2/3)*CANVAS_HEIGHT, 60, "#ab5612")
     ],
     asteroids: [],
     texts: [
@@ -632,8 +634,8 @@ var level05 = {
 var level06 = {
     ship: new Ship(100, (1/4)*CANVAS_HEIGHT),
     planets: [
-        new Planet((1/3)*CANVAS_WIDTH, (3/4)*CANVAS_HEIGHT, 100, 10, "#ab5612"),
-        new Planet((3/4)*CANVAS_WIDTH, (1/3)*CANVAS_HEIGHT, 60, 6, "#ab5612")
+        new Planet((1/3)*CANVAS_WIDTH, (3/4)*CANVAS_HEIGHT, 100, "#ab5612"),
+        new Planet((3/4)*CANVAS_WIDTH, (1/3)*CANVAS_HEIGHT, 60, "#ab5612")
     ],
     asteroids: [],
     texts: [],
@@ -657,7 +659,7 @@ var level06 = {
 var level07 = {
 	ship: new Ship((1/4)*CANVAS_WIDTH, (1/8)*CANVAS_HEIGHT),
     planets: [
-        new Planet((3/5)*CANVAS_WIDTH, (1/2)*CANVAS_HEIGHT, 70, 35, "#ab5612")
+        new Planet((3/5)*CANVAS_WIDTH, (1/2)*CANVAS_HEIGHT, 80, "#ab5612")
     ],
     asteroids: [],
     texts: [],
@@ -683,11 +685,11 @@ var level07 = {
 var level08 = {
     ship: new Ship(100, (1/2)*CANVAS_HEIGHT),
     planets: [
-        new Planet((1/2)*CANVAS_WIDTH, (1/2)*CANVAS_HEIGHT, 70, 35, "#ab5612")
+        new Planet((1/2)*CANVAS_WIDTH, (1/2)*CANVAS_HEIGHT, 70, "#ab5612")
     ],
     asteroids: [
-      new Asteroid(CANVAS_WIDTH/2, (1/4)*CANVAS_HEIGHT, 5, 0, 20, 2.3, "#dddddd"),
-      new Asteroid(CANVAS_WIDTH/2, (3/4)*CANVAS_HEIGHT, -5, 0, 20, 2.3, "#dddddd")
+      new Asteroid(CANVAS_WIDTH/2, (1/4)*CANVAS_HEIGHT, 5, 0, 20, 4.1, "#dddddd"),
+      new Asteroid(CANVAS_WIDTH/2, (3/4)*CANVAS_HEIGHT, -5, 0, 20, 4.1, "#dddddd")
     ],
     texts: [],
     clickables: [
@@ -710,8 +712,8 @@ var level08 = {
 var level09 = {
     ship: new Ship(100, (1/6)*CANVAS_HEIGHT),
     planets: [
-        new Planet((1/3)*CANVAS_WIDTH, CANVAS_HEIGHT, 200, 100, "#ab5612"),
-        new Planet((3/5)*CANVAS_WIDTH, (3/5)*CANVAS_HEIGHT, 50, 20, "#ab5612")
+        new Planet((1/3)*CANVAS_WIDTH, CANVAS_HEIGHT, 200, "#ab5612"),
+        new Planet((3/5)*CANVAS_WIDTH, (3/5)*CANVAS_HEIGHT, 50, "#ab5612")
     ],
     asteroids: [],
     texts: [],
@@ -735,7 +737,7 @@ var level09 = {
 var level10 = {
     ship: new Ship((1/12)*CANVAS_WIDTH, (7/8)*CANVAS_HEIGHT),
     planets: [
-        new Planet((1/4)*CANVAS_WIDTH, (5/7)*CANVAS_HEIGHT, 50, 20, "#ab5612")
+        new Planet((1/4)*CANVAS_WIDTH, (5/7)*CANVAS_HEIGHT, 50, "#ab5612")
     ],
     asteroids: [],
     texts: [],
@@ -759,7 +761,7 @@ var level10 = {
 var level11 = {
     ship: new Ship((1/8)*CANVAS_WIDTH, (5/8)*CANVAS_HEIGHT),
     planets: [
-        new Planet((1/2)*CANVAS_WIDTH, (1/12)*CANVAS_HEIGHT, 80, 14, "#ab5612")
+        new Planet((1/2)*CANVAS_WIDTH, (1/12)*CANVAS_HEIGHT, 80, "#ab5612")
     ],
     asteroids: [
         new Asteroid((1/2)*CANVAS_WIDTH-150, (1/12)*CANVAS_HEIGHT, 0, 4.6, 15, 6, "#dddddd"),
@@ -772,7 +774,7 @@ var level11 = {
     goal: new Goal((6/7)*CANVAS_WIDTH, (2/5)*CANVAS_HEIGHT)
 }
 
-var currentLevel = homeScreen;
+var currentLevel = level11;
 
 var cloneLevel = function(level) {
 	var cloneShip,
@@ -786,7 +788,7 @@ var cloneLevel = function(level) {
 	var clonePlanets = [];
 	for (planet of level.planets) {
 		clonePlanets.push(
-			new Planet(planet.x, planet.y, planet.radius, planet.mass, planet.color)
+			new Planet(planet.x, planet.y, planet.radius, planet.color, planet.mass)
 		);
 	}
 	var cloneAsteroids = [];
