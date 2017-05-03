@@ -142,8 +142,6 @@ function Planet(x, y, radius, color, mass=null) {
     this.mass = !!mass ? mass : Math.pow((radius/10), 1.5);
 	this.color = color;
 
-    console.log(this.mass);
-
 	this.containsShip = function(ship) {
 		var d = Math.sqrt(
 			Math.pow(this.x - ship.x, 2) + Math.pow(this.y - ship.y, 2)
@@ -289,7 +287,6 @@ function Goal(x, y) {
 			if(this.radius < this.originalRadius * 1.1) {
       			var diff = Math.abs(this.radius - this.originalRadius)
       			this.radius += (1/4) / (diff + 1);
-        		//this.lineWidth -= (1/2) / (diff + 1);
       		}
       		else {
       			this.growing = false;
@@ -299,7 +296,6 @@ function Goal(x, y) {
     		if(this.radius > this.originalRadius * .9) {
       			var diff = Math.abs(this.radius - this.originalRadius)
       			this.radius -= (1/4) / (diff + 1)
-        		//this.lineWidth += (1/2) / (diff + 1);
       		}
       		else {
       			this.growing = true;
@@ -764,9 +760,10 @@ var level11 = {
         new Planet((1/2)*CANVAS_WIDTH, (1/12)*CANVAS_HEIGHT, 80, "#ab5612")
     ],
     asteroids: [
-        new Asteroid((1/2)*CANVAS_WIDTH-150, (1/12)*CANVAS_HEIGHT, 0, 4.6, 15, 6, "#dddddd"),
-        new Asteroid((1/2)*CANVAS_WIDTH, (1/2)*CANVAS_HEIGHT, -4, 0, 15, 6, "#dddddd"),
-        new Asteroid((1/2)*CANVAS_WIDTH+175, (1/12)*CANVAS_HEIGHT, 0, -5.5, 15, 10, "#dddddd")
+        new Asteroid((1/2)*CANVAS_WIDTH-150, (1/12)*CANVAS_HEIGHT, 0, 5.9, 15, 6, "#dddddd"),
+        new Asteroid((1/2)*CANVAS_WIDTH, (1/2)*CANVAS_HEIGHT, -5, 0, 15, 6, "#dddddd"),
+        new Asteroid((1/2)*CANVAS_WIDTH+175, (1/12)*CANVAS_HEIGHT, 0, -7, 15, 10, "#dddddd"),
+        new Asteroid((1/2)*CANVAS_WIDTH, (-1/4)*CANVAS_HEIGHT, -6.5, 0, 15, 6, "#dddddd")
     ],
     texts: [],
     clickables: [],
